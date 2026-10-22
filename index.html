@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Công cụ tạo biểu mẫu điện tử</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.container {
+  max-width: 900px;
+  width: 100%;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+/* ---------- Header gọn ---------- */
+.header {
+  background: linear-gradient(135deg, #0000ff 0%, #667eea 100%);
+  color: #fff;
+  padding: 22px 14px;
+  text-align: center;
+}
+.header h1 {
+  /* Thu nhỏ theo bề rộng màn hình để LUÔN nằm trên 1 dòng */
+  font-size: clamp(13px, 3.5vw, 25px);
+  font-weight: 700;
+  line-height: 1.25;
+  white-space: nowrap;
+  letter-spacing: 0.2px;
+  text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.3);
+}
+.header p {
+  margin-top: 8px;
+  font-size: clamp(11px, 2.6vw, 15px);
+  opacity: 0.95;
+  line-height: 1.4;
+}
+
+/* ---------- Nội dung ---------- */
+.content { padding: 24px 20px; }
+
+/* ---------- 2 thẻ công cụ ---------- */
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.tool-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 22px 14px 20px;
+  border-radius: 14px;
+  color: #fff;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden; /* chặn mọi tràn ngang */
+}
+.tool-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 30px rgba(102, 126, 234, 0.45);
+}
+.tool-card .icon { font-size: 34px; margin-bottom: 6px; }
+.tool-card h3 {
+  font-size: 16px;
+  margin-bottom: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+/* bảng minh họa nhỏ gọn trong thẻ */
+.preview {
+  width: auto;              /* co theo nội dung, không kéo full thẻ */
+  max-width: 100%;
+  margin: 0 auto 10px;      /* căn giữa thẻ */
+  border-collapse: collapse;
+  table-layout: auto;
+  font-family: 'Times New Roman', serif;
+  font-size: clamp(9.5px, 2.7vw, 11.5px);
+  color: #fff;
+}
+.preview th {
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  padding: 4px 5px;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.25;
+  white-space: nowrap;      /* KHÔNG cho chữ xuống dòng */
+}
+
+.badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.22);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  white-space: nowrap;
+}
+.tool-card .btn {
+  background: #fff;
+  color: #4c51bf;
+  border: 0;
+  padding: 10px 22px;
+  border-radius: 22px;
+  font-weight: 700;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: transform 0.2s;
+  white-space: nowrap;
+}
+.tool-card .btn:hover { transform: scale(1.05); }
+
+/* ---------- Hộp hướng dẫn thu gọn ---------- */
+.guide-box {
+  border: 1.5px solid #ffeeba;
+  background: #fffdf5;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.guide-header {
+  background: #fff9db;
+  color: #856404;
+  padding: 11px 14px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background 0.2s;
+}
+.guide-header:hover { background: #fff3bf; }
+.guide-header::after {
+  content: "▼";
+  font-size: 11px;
+  transition: transform 0.3s;
+}
+.guide-header.active::after { transform: rotate(-180deg); }
+
+.guide-content {
+  display: none;
+  padding: 12px 18px 14px;
+  font-size: 13.5px;
+  color: #5f4b00;
+  line-height: 1.75;
+  border-top: 1px solid #ffeeba;
+}
+.guide-content ol { padding-left: 20px; margin: 0; }
+.guide-content ol li { margin-bottom: 5px; }
+.guide-content strong { color: #664d03; }
+.guide-content code {
+  background: #fff3bf;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  font-size: 12.5px;
+  color: #b45309;
+}
+
+/* ---------- Footer ---------- */
+.footer {
+  padding: 14px;
+  text-align: center;
+  color: #0000ff;
+  font-size: clamp(12px, 2.4vw, 14px);
+  font-weight: 700;
+  border-top: 2px solid #e0e7ff;
+  background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+}
+
+@media (max-width: 600px) {
+  .content { padding: 18px 14px; }
+  .header { padding: 18px 10px; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Header gọn -->
+  <div class="header">
+    <h1>🛠️ CÔNG CỤ TẠO BIỂU MẪU ĐIỆN TỬ</h1>
+    <p>Dữ liệu gửi trực tiếp về Google Sheets · Không cần biết lập trình</p>
+  </div>
+
+  <div class="content">
+    <!-- 2 thẻ công cụ -->
+    <div class="tools-grid">
+      <div class="tool-card" onclick="window.open('KhongCoPhanCot.html', '_blank')">
+        <span class="icon">📝</span>
+        <h3>BIỂU MẪU ĐƠN GIẢN</h3>
+        <table class="preview">
+          <tr>
+            <th>Họ và tên</th>
+            <th>Ngày sinh</th>
+          </tr>
+        </table>
+        <div class="badge">Không có cột con</div>
+        <button class="btn">Bắt đầu tạo →</button>
+      </div>
+
+      <div class="tool-card" onclick="window.open('CoPhanCot.html', '_blank')">
+        <span class="icon">🗂️</span>
+        <h3>BIỂU MẪU NÂNG CAO</h3>
+        <table class="preview">
+          <tr>
+            <th rowspan="2">Họ và tên</th>
+            <th colspan="2">Quê quán</th>
+          </tr>
+          <tr>
+            <th>Tỉnh, Thành phố</th>
+            <th>Xã, phường</th>
+          </tr>
+        </table>
+        <div class="badge">Có phân cột con</div>
+        <button class="btn">Bắt đầu tạo →</button>
+      </div>
+    </div>
+
+    <!-- Hướng dẫn nhanh (thu gọn) -->
+    <div class="guide-box">
+      <div class="guide-header" onclick="toggleGuide(this)">
+        💡 Hướng dẫn sử dụng nhanh
+      </div>
+      <div class="guide-content">
+        <ol>
+          <li><strong>Chọn loại biểu mẫu</strong> phù hợp (đơn giản hoặc nâng cao)</li>
+          <li><strong>Nhập danh sách cột</strong> cần thu thập dữ liệu</li>
+          <li><strong>Chọn màu</strong> rồi bấm <strong>TẠO VÀ TẢI TỆP</strong> (nhận 2 tệp: <code>index.html</code> và <code>code.gs</code>)</li>
+          <li><strong>Dán code.gs</strong> vào <strong>script.google.com</strong> → Triển khai dạng <strong>Ứng dụng web</strong> (Người thực thi: Tôi · Truy cập: Bất kỳ ai)</li>
+          <li><strong>Dán URL Web App</strong> vào tệp <code>index.html</code>, sau đó chia sẻ để bắt đầu thu thập</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Phường Thanh Khê, Thành phố Đà Nẵng
+  </div>
+</div>
+
+<script>
+function toggleGuide(el) {
+  el.classList.toggle('active');
+  const content = el.nextElementSibling;
+  content.style.display = el.classList.contains('active') ? 'block' : 'none';
+}
+</script>
+
+</body>
+</html>
